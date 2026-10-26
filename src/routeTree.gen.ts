@@ -10,33 +10,154 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CategoriasRouteImport } from './routes/categorias'
+import { Route as ComunasRouteImport } from './routes/comunas'
+import { Route as ExplorarRouteImport } from './routes/explorar'
+import { Route as FavoritosRouteImport } from './routes/favoritos'
+import { Route as IngresarRouteImport } from './routes/ingresar'
+import { Route as PrivacidadRouteImport } from './routes/privacidad'
+import { Route as PublicarRouteImport } from './routes/publicar'
+import { Route as RegistrarseRouteImport } from './routes/registrarse'
+import { Route as TerminosRouteImport } from './routes/terminos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriasRoute = CategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComunasRoute = ComunasRouteImport.update({
+  id: '/comunas',
+  path: '/comunas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExplorarRoute = ExplorarRouteImport.update({
+  id: '/explorar',
+  path: '/explorar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritosRoute = FavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IngresarRoute = IngresarRouteImport.update({
+  id: '/ingresar',
+  path: '/ingresar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadRoute = PrivacidadRouteImport.update({
+  id: '/privacidad',
+  path: '/privacidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicarRoute = PublicarRouteImport.update({
+  id: '/publicar',
+  path: '/publicar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistrarseRoute = RegistrarseRouteImport.update({
+  id: '/registrarse',
+  path: '/registrarse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminosRoute = TerminosRouteImport.update({
+  id: '/terminos',
+  path: '/terminos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/categorias': typeof CategoriasRoute
+  '/comunas': typeof ComunasRoute
+  '/explorar': typeof ExplorarRoute
+  '/favoritos': typeof FavoritosRoute
+  '/ingresar': typeof IngresarRoute
+  '/privacidad': typeof PrivacidadRoute
+  '/publicar': typeof PublicarRoute
+  '/registrarse': typeof RegistrarseRoute
+  '/terminos': typeof TerminosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/categorias': typeof CategoriasRoute
+  '/comunas': typeof ComunasRoute
+  '/explorar': typeof ExplorarRoute
+  '/favoritos': typeof FavoritosRoute
+  '/ingresar': typeof IngresarRoute
+  '/privacidad': typeof PrivacidadRoute
+  '/publicar': typeof PublicarRoute
+  '/registrarse': typeof RegistrarseRoute
+  '/terminos': typeof TerminosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/categorias': typeof CategoriasRoute
+  '/comunas': typeof ComunasRoute
+  '/explorar': typeof ExplorarRoute
+  '/favoritos': typeof FavoritosRoute
+  '/ingresar': typeof IngresarRoute
+  '/privacidad': typeof PrivacidadRoute
+  '/publicar': typeof PublicarRoute
+  '/registrarse': typeof RegistrarseRoute
+  '/terminos': typeof TerminosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/categorias'
+    | '/comunas'
+    | '/explorar'
+    | '/favoritos'
+    | '/ingresar'
+    | '/privacidad'
+    | '/publicar'
+    | '/registrarse'
+    | '/terminos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/categorias'
+    | '/comunas'
+    | '/explorar'
+    | '/favoritos'
+    | '/ingresar'
+    | '/privacidad'
+    | '/publicar'
+    | '/registrarse'
+    | '/terminos'
+  id:
+    | '__root__'
+    | '/'
+    | '/categorias'
+    | '/comunas'
+    | '/explorar'
+    | '/favoritos'
+    | '/ingresar'
+    | '/privacidad'
+    | '/publicar'
+    | '/registrarse'
+    | '/terminos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CategoriasRoute: typeof CategoriasRoute
+  ComunasRoute: typeof ComunasRoute
+  ExplorarRoute: typeof ExplorarRoute
+  FavoritosRoute: typeof FavoritosRoute
+  IngresarRoute: typeof IngresarRoute
+  PrivacidadRoute: typeof PrivacidadRoute
+  PublicarRoute: typeof PublicarRoute
+  RegistrarseRoute: typeof RegistrarseRoute
+  TerminosRoute: typeof TerminosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +169,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categorias': {
+      id: '/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof CategoriasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comunas': {
+      id: '/comunas'
+      path: '/comunas'
+      fullPath: '/comunas'
+      preLoaderRoute: typeof ComunasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explorar': {
+      id: '/explorar'
+      path: '/explorar'
+      fullPath: '/explorar'
+      preLoaderRoute: typeof ExplorarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoritos': {
+      id: '/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof FavoritosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ingresar': {
+      id: '/ingresar'
+      path: '/ingresar'
+      fullPath: '/ingresar'
+      preLoaderRoute: typeof IngresarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidad': {
+      id: '/privacidad'
+      path: '/privacidad'
+      fullPath: '/privacidad'
+      preLoaderRoute: typeof PrivacidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publicar': {
+      id: '/publicar'
+      path: '/publicar'
+      fullPath: '/publicar'
+      preLoaderRoute: typeof PublicarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registrarse': {
+      id: '/registrarse'
+      path: '/registrarse'
+      fullPath: '/registrarse'
+      preLoaderRoute: typeof RegistrarseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terminos': {
+      id: '/terminos'
+      path: '/terminos'
+      fullPath: '/terminos'
+      preLoaderRoute: typeof TerminosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CategoriasRoute: CategoriasRoute,
+  ComunasRoute: ComunasRoute,
+  ExplorarRoute: ExplorarRoute,
+  FavoritosRoute: FavoritosRoute,
+  IngresarRoute: IngresarRoute,
+  PrivacidadRoute: PrivacidadRoute,
+  PublicarRoute: PublicarRoute,
+  RegistrarseRoute: RegistrarseRoute,
+  TerminosRoute: TerminosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
