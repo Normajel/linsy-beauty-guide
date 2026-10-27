@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { COMMUNES } from "@/lib/catalog";
 
-export function SearchBar({ initialQ = "", initialComuna = "" }: { initialQ?: string; initialComuna?: string }) {
+export function SearchBar({ initialQ = "", initialComuna = "" }: { initialQ?: string | undefined; initialComuna?: string | undefined }) {
   const navigate = useNavigate();
   const [q, setQ] = useState(initialQ);
   const [comuna, setComuna] = useState(initialComuna);
