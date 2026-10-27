@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Linsy UI lives in src/components/linsy; category/commune catalog is static in src/lib/catalog.ts until moved to the database (stage 2) — keep slugs stable since URLs use them.
