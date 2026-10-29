@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ComingSoon } from "@/components/linsy/ComingSoon";
+import { AccountPage } from "@/components/linsy/AccountPage";
 
 export const Route = createFileRoute("/registrarse")({
   head: () => ({
@@ -9,7 +9,9 @@ export const Route = createFileRoute("/registrarse")({
       { property: "og:title", content: "Crear cuenta · Linsy" },
       { property: "og:description", content: "Regístrate en Linsy." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: () => <ComingSoon title="Crear cuenta" description="El registro estará disponible en la próxima etapa. Podrás elegir entre cuenta de cliente o de profesional." />,
+  component: () => <AccountPage mode="register" />,
 });
