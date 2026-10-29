@@ -8,6 +8,8 @@ export const Route = createFileRoute("/terminos")({
       { name: "description", content: "Condiciones de uso de la plataforma Linsy." },
       { property: "og:title", content: "Términos de uso · Linsy" },
       { property: "og:description", content: "Condiciones para clientes y profesionales." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (

@@ -10,19 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdministracionRouteImport } from './routes/administracion'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as ComunasRouteImport } from './routes/comunas'
 import { Route as ExplorarRouteImport } from './routes/explorar'
 import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as IngresarRouteImport } from './routes/ingresar'
+import { Route as MiNegocioRouteImport } from './routes/mi-negocio'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as PublicarRouteImport } from './routes/publicar'
+import { Route as RecuperarContrasenaRouteImport } from './routes/recuperar-contrasena'
 import { Route as RegistrarseRouteImport } from './routes/registrarse'
 import { Route as TerminosRouteImport } from './routes/terminos'
+import { Route as ProfesionalSlugRouteImport } from './routes/profesional.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdministracionRoute = AdministracionRouteImport.update({
+  id: '/administracion',
+  path: '/administracion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriasRoute = CategoriasRouteImport.update({
@@ -50,6 +59,11 @@ const IngresarRoute = IngresarRouteImport.update({
   path: '/ingresar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MiNegocioRoute = MiNegocioRouteImport.update({
+  id: '/mi-negocio',
+  path: '/mi-negocio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacidadRoute = PrivacidadRouteImport.update({
   id: '/privacidad',
   path: '/privacidad',
@@ -58,6 +72,11 @@ const PrivacidadRoute = PrivacidadRouteImport.update({
 const PublicarRoute = PublicarRouteImport.update({
   id: '/publicar',
   path: '/publicar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecuperarContrasenaRoute = RecuperarContrasenaRouteImport.update({
+  id: '/recuperar-contrasena',
+  path: '/recuperar-contrasena',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegistrarseRoute = RegistrarseRouteImport.update({
@@ -70,94 +89,127 @@ const TerminosRoute = TerminosRouteImport.update({
   path: '/terminos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfesionalSlugRoute = ProfesionalSlugRouteImport.update({
+  id: '/profesional/$slug',
+  path: '/profesional/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/administracion': typeof AdministracionRoute
   '/categorias': typeof CategoriasRoute
   '/comunas': typeof ComunasRoute
   '/explorar': typeof ExplorarRoute
   '/favoritos': typeof FavoritosRoute
   '/ingresar': typeof IngresarRoute
+  '/mi-negocio': typeof MiNegocioRoute
   '/privacidad': typeof PrivacidadRoute
   '/publicar': typeof PublicarRoute
+  '/recuperar-contrasena': typeof RecuperarContrasenaRoute
   '/registrarse': typeof RegistrarseRoute
   '/terminos': typeof TerminosRoute
+  '/profesional/$slug': typeof ProfesionalSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/administracion': typeof AdministracionRoute
   '/categorias': typeof CategoriasRoute
   '/comunas': typeof ComunasRoute
   '/explorar': typeof ExplorarRoute
   '/favoritos': typeof FavoritosRoute
   '/ingresar': typeof IngresarRoute
+  '/mi-negocio': typeof MiNegocioRoute
   '/privacidad': typeof PrivacidadRoute
   '/publicar': typeof PublicarRoute
+  '/recuperar-contrasena': typeof RecuperarContrasenaRoute
   '/registrarse': typeof RegistrarseRoute
   '/terminos': typeof TerminosRoute
+  '/profesional/$slug': typeof ProfesionalSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/administracion': typeof AdministracionRoute
   '/categorias': typeof CategoriasRoute
   '/comunas': typeof ComunasRoute
   '/explorar': typeof ExplorarRoute
   '/favoritos': typeof FavoritosRoute
   '/ingresar': typeof IngresarRoute
+  '/mi-negocio': typeof MiNegocioRoute
   '/privacidad': typeof PrivacidadRoute
   '/publicar': typeof PublicarRoute
+  '/recuperar-contrasena': typeof RecuperarContrasenaRoute
   '/registrarse': typeof RegistrarseRoute
   '/terminos': typeof TerminosRoute
+  '/profesional/$slug': typeof ProfesionalSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/administracion'
     | '/categorias'
     | '/comunas'
     | '/explorar'
     | '/favoritos'
     | '/ingresar'
+    | '/mi-negocio'
     | '/privacidad'
     | '/publicar'
+    | '/recuperar-contrasena'
     | '/registrarse'
     | '/terminos'
+    | '/profesional/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/administracion'
     | '/categorias'
     | '/comunas'
     | '/explorar'
     | '/favoritos'
     | '/ingresar'
+    | '/mi-negocio'
     | '/privacidad'
     | '/publicar'
+    | '/recuperar-contrasena'
     | '/registrarse'
     | '/terminos'
+    | '/profesional/$slug'
   id:
     | '__root__'
     | '/'
+    | '/administracion'
     | '/categorias'
     | '/comunas'
     | '/explorar'
     | '/favoritos'
     | '/ingresar'
+    | '/mi-negocio'
     | '/privacidad'
     | '/publicar'
+    | '/recuperar-contrasena'
     | '/registrarse'
     | '/terminos'
+    | '/profesional/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdministracionRoute: typeof AdministracionRoute
   CategoriasRoute: typeof CategoriasRoute
   ComunasRoute: typeof ComunasRoute
   ExplorarRoute: typeof ExplorarRoute
   FavoritosRoute: typeof FavoritosRoute
   IngresarRoute: typeof IngresarRoute
+  MiNegocioRoute: typeof MiNegocioRoute
   PrivacidadRoute: typeof PrivacidadRoute
   PublicarRoute: typeof PublicarRoute
+  RecuperarContrasenaRoute: typeof RecuperarContrasenaRoute
   RegistrarseRoute: typeof RegistrarseRoute
   TerminosRoute: typeof TerminosRoute
+  ProfesionalSlugRoute: typeof ProfesionalSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -167,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/administracion': {
+      id: '/administracion'
+      path: '/administracion'
+      fullPath: '/administracion'
+      preLoaderRoute: typeof AdministracionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categorias': {
@@ -204,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IngresarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mi-negocio': {
+      id: '/mi-negocio'
+      path: '/mi-negocio'
+      fullPath: '/mi-negocio'
+      preLoaderRoute: typeof MiNegocioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacidad': {
       id: '/privacidad'
       path: '/privacidad'
@@ -216,6 +282,13 @@ declare module '@tanstack/react-router' {
       path: '/publicar'
       fullPath: '/publicar'
       preLoaderRoute: typeof PublicarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recuperar-contrasena': {
+      id: '/recuperar-contrasena'
+      path: '/recuperar-contrasena'
+      fullPath: '/recuperar-contrasena'
+      preLoaderRoute: typeof RecuperarContrasenaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registrarse': {
@@ -232,20 +305,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TerminosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profesional/$slug': {
+      id: '/profesional/$slug'
+      path: '/profesional/$slug'
+      fullPath: '/profesional/$slug'
+      preLoaderRoute: typeof ProfesionalSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdministracionRoute: AdministracionRoute,
   CategoriasRoute: CategoriasRoute,
   ComunasRoute: ComunasRoute,
   ExplorarRoute: ExplorarRoute,
   FavoritosRoute: FavoritosRoute,
   IngresarRoute: IngresarRoute,
+  MiNegocioRoute: MiNegocioRoute,
   PrivacidadRoute: PrivacidadRoute,
   PublicarRoute: PublicarRoute,
+  RecuperarContrasenaRoute: RecuperarContrasenaRoute,
   RegistrarseRoute: RegistrarseRoute,
   TerminosRoute: TerminosRoute,
+  ProfesionalSlugRoute: ProfesionalSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
