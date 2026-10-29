@@ -10,6 +10,8 @@ export const Route = createFileRoute("/comunas")({
       { name: "description", content: "Encuentra profesionales de belleza en Viña del Mar, Valparaíso, Quilpué, Villa Alemana, Concón y todas las comunas de la región." },
       { property: "og:title", content: "Comunas · Linsy" },
       { property: "og:description", content: "Busca belleza y cuidado personal por comuna." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Comunas,

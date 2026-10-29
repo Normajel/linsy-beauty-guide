@@ -8,6 +8,8 @@ export const Route = createFileRoute("/privacidad")({
       { name: "description", content: "Cómo Linsy trata los datos personales de clientes y profesionales." },
       { property: "og:title", content: "Privacidad · Linsy" },
       { property: "og:description", content: "Política de privacidad de Linsy." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (

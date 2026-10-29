@@ -18,6 +18,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Busca peluquería, uñas, pestañas, cosmetología, masajes y más por comuna. Contacta directo por WhatsApp." },
       { property: "og:title", content: "Linsy · Encuentra tu próximo momento de cuidado" },
       { property: "og:description", content: "Profesionales de belleza y cuidado personal en la Región de Valparaíso." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,

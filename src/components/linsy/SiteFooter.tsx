@@ -12,7 +12,7 @@ export function SiteFooter() {
           </p>
         </div>
         <FooterCol title="Explorar" links={[["/explorar", "Profesionales"], ["/categorias", "Categorías"], ["/comunas", "Comunas"]]} />
-        <FooterCol title="Profesionales" links={[["/publicar", "Publicar mi negocio"], ["/ingresar", "Iniciar sesión"]]} />
+        <FooterCol title="Profesionales" links={[["/publicar", "Publicar mi negocio"], ["/mi-negocio", "Mi negocio"], ["/ingresar", "Iniciar sesión"], ["/administracion", "Administración · vista de prueba"]]} />
         <FooterCol title="Legal" links={[["/privacidad", "Privacidad"], ["/terminos", "Términos de uso"]]} />
       </div>
       <div className="border-t border-border">

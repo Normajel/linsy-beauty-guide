@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ComingSoon } from "@/components/linsy/ComingSoon";
+import { AccountPage } from "@/components/linsy/AccountPage";
 
 export const Route = createFileRoute("/ingresar")({
   head: () => ({
@@ -9,7 +9,9 @@ export const Route = createFileRoute("/ingresar")({
       { property: "og:title", content: "Iniciar sesión · Linsy" },
       { property: "og:description", content: "Accede a tu cuenta." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: () => <ComingSoon title="Iniciar sesión" description="Las cuentas estarán disponibles en la próxima etapa. Mientras tanto puedes explorar sin registrarte." />,
+  component: () => <AccountPage mode="login" />,
 });

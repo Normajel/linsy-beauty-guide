@@ -21,6 +21,8 @@ export const Route = createFileRoute("/explorar")({
       { name: "description", content: "Busca profesionales de belleza y cuidado personal por servicio y comuna en la Región de Valparaíso." },
       { property: "og:title", content: "Explorar profesionales · Linsy" },
       { property: "og:description", content: "Filtra por servicio, comuna y modalidad de atención." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Explorar,

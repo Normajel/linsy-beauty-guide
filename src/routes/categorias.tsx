@@ -10,6 +10,8 @@ export const Route = createFileRoute("/categorias")({
       { name: "description", content: "Peluquería, uñas, pestañas, cosmetología, barbería, maquillaje, masajes y más en la Región de Valparaíso." },
       { property: "og:title", content: "Categorías · Linsy" },
       { property: "og:description", content: "Elige una categoría y encuentra profesionales en tu comuna." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (
