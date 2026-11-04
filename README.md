@@ -1136,3 +1136,35 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Activar el flujo de publicación
+
+1. Activa un proyecto Supabase exclusivo para Linsy. En un proyecto existente,
+   revisa primero si alguna tabla de la migración de `supabase/migrations` ya existe.
+   Aplica la migración versionada al entorno de pruebas antes de usarla en producción.
+2. Copia `.env.example` a `.env.local` y agrega la URL de la API del proyecto y
+   su clave pública publishable. Configura las mismas variables en el entorno de
+   compilación del sitio. Usa únicamente la clave pública en el frontend.
+3. En Supabase Auth, configura la URL del sitio, las redirecciones permitidas
+   `/ingresar` y `/recuperar-contrasena` para los orígenes que correspondan, y
+   mantén habilitada la confirmación por correo.
+4. Crea y confirma la cuenta de administración. Un operador autorizado asigna el
+   rol desde SQL con el UUID de esa cuenta:
+
+   ```sql
+   insert into public.user_roles (user_id, role)
+   values ('UUID_DE_LA_CUENTA', 'admin')
+   on conflict (user_id) do update set role = excluded.role;
+   ```
+
+5. En pruebas, registra una cuenta profesional nueva, guarda un borrador con una
+   foto, envíalo a revisión y comprueba que esté oculto en una ventana privada.
+   Solicita una corrección, reenvía el perfil y apruébalo. Comprueba que ahora
+   aparece en Explorar, que abre WhatsApp y que una edición pendiente mantiene
+   visible la versión publicada. Prueba un reporte con otra cuenta.
+
+El flujo admite un negocio por profesional. Las imágenes se guardan en un bucket
+privado y se muestran mediante enlaces temporales. Los cambios a perfiles
+aprobados pasan por revisión. El catálogo inicial está sembrado en la migración y
+usa los mismos slugs que la interfaz. La ubicación por distancia y las métricas
+se incorporarán en otra entrega.

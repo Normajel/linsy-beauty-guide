@@ -1,48 +1,41 @@
 import { useNavigate } from "@tanstack/react-router";
 import { LocateFixed, MapPin, Search } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { COMMUNES } from "@/lib/catalog";
 
-export function SearchBar({ initialQ = "", initialComuna = "" }: { initialQ?: string | undefined; initialComuna?: string | undefined }) {
+export function SearchBar({
+  initialQ = "",
+  initialComuna = "",
+  initialCategory,
+}: {
+  initialQ?: string | undefined;
+  initialComuna?: string | undefined;
+  initialCategory?: string | undefined;
+}) {
   const navigate = useNavigate();
   const [q, setQ] = useState(initialQ);
   const [comuna, setComuna] = useState(initialComuna);
   const [askGeo, setAskGeo] = useState(false);
-  const [locating, setLocating] = useState(false);
 
   function submit(e: FormEvent) {
     e.preventDefault();
     navigate({
       to: "/explorar",
-      search: { q: q.trim().slice(0, 80) || undefined, comuna: comuna || undefined },
+      search: {
+        q: q.trim().slice(0, 80) || undefined,
+        comuna: comuna || undefined,
+        categoria: initialCategory,
+      },
     });
-  }
-
-  function requestLocation() {
-    if (!("geolocation" in navigator)) {
-      toast.error("Tu navegador no permite compartir la ubicación.");
-      setAskGeo(false);
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      () => {
-        setLocating(false);
-        setAskGeo(false);
-        navigate({ to: "/explorar", search: { q: q.trim() || undefined, cerca: true } });
-      },
-      () => {
-        setLocating(false);
-        setAskGeo(false);
-        toast.error("No pudimos obtener tu ubicación. Puedes elegir tu comuna en su lugar.");
-      },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
-    );
   }
 
   return (
@@ -69,10 +62,16 @@ export function SearchBar({ initialQ = "", initialComuna = "" }: { initialQ?: st
               className="w-full bg-transparent text-sm outline-none"
             >
               <option value="">Todas las comunas</option>
-              {COMMUNES.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+              {COMMUNES.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
             </select>
           </label>
-          <Button type="submit" size="lg" className="h-auto min-h-12">Buscar profesionales</Button>
+          <Button type="submit" size="lg" className="h-auto min-h-12">
+            Buscar profesionales
+          </Button>
         </div>
         <button
           type="button"
@@ -86,17 +85,14 @@ export function SearchBar({ initialQ = "", initialComuna = "" }: { initialQ?: st
       <Dialog open={askGeo} onOpenChange={setAskGeo}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>¿Usar tu ubicación?</DialogTitle>
+            <DialogTitle>Búsqueda por cercanía</DialogTitle>
             <DialogDescription>
-              La usaremos solo en este momento para ordenar a las profesionales por cercanía.
-              No la guardamos ni la compartimos. Puedes elegir tu comuna en su lugar.
+              La búsqueda por distancia estará disponible más adelante. Por ahora puedes buscar por
+              comuna.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setAskGeo(false)}>Ahora no</Button>
-            <Button onClick={requestLocation} disabled={locating}>
-              {locating ? "Buscando ubicación…" : "Permitir ubicación"}
-            </Button>
+            <Button onClick={() => setAskGeo(false)}>Entendido</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

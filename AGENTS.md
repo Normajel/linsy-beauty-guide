@@ -9,7 +9,7 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Linsy UI lives in src/components/linsy; category/commune catalog is static in src/lib/catalog.ts until moved to the database (stage 2) — keep slugs stable since URLs use them.
-- Pending account and workspace pages are public design previews until the external backend is connected; never perform or simulate authentication, persistence, or privileged actions in these previews.
-- BusinessEditor keeps unsaved preview inputs and object-URL images in component state only, releasing URLs on removal and unmount; this allows visual review without collecting data before integration.
+- Linsy UI lives in src/components/linsy; the base category and commune labels in src/lib/catalog.ts match the database seeds — keep slugs stable since URLs use them.
+- Account and workspace actions require a configured Linsy Supabase backend. With no connection configured, show the design previews with actions disabled.
+- BusinessEditor keeps unsaved inputs and object URLs in component state. With a backend connection, private media is uploaded when saving and an approved revision stays visible until the replacement is approved.
 - Shared leaf-route metadata is provided by src/lib/page-meta.ts for new pages, so each has its own app-specific social and search metadata.
