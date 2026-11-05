@@ -52,11 +52,11 @@ export function SiteHeader() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Link to="/comunas" className={navLink} activeProps={activeProps}>
-            Comunas
-          </Link>
           <Link to="/planes" className={navLink} activeProps={activeProps}>
             Planes
+          </Link>
+          <Link to="/comunas" className={navLink} activeProps={activeProps}>
+            Comunas
           </Link>
           <Link
             to="/favoritos"
@@ -97,7 +97,6 @@ export function SiteHeader() {
                 { to: "/", label: "Inicio" },
                 { to: "/explorar", label: "Explorar profesionales" },
                 { to: "/comunas", label: "Comunas" },
-                { to: "/planes", label: "Planes para profesionales" },
                 { to: "/favoritos", label: "Favoritos" },
               ].map((l) => (
                 <Link
@@ -108,9 +107,17 @@ export function SiteHeader() {
                   {l.label}
                 </Link>
               ))}
-              <p className="mt-4 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Categorías
-              </p>
+              <div className="mt-4 flex items-center justify-between px-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Categorías
+                </p>
+                <Link
+                  to="/planes"
+                  className="text-xs font-semibold text-primary hover:underline"
+                >
+                  Planes
+                </Link>
+              </div>
               <div className="grid grid-cols-1 gap-1">
                 {CATEGORIES.map((c) => (
                   <Link
