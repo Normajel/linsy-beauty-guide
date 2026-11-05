@@ -55,6 +55,9 @@ export function SiteHeader() {
           <Link to="/comunas" className={navLink} activeProps={activeProps}>
             Comunas
           </Link>
+          <Link to="/planes" className={navLink} activeProps={activeProps}>
+            Planes
+          </Link>
           <Link
             to="/favoritos"
             className={`${navLink} inline-flex items-center gap-1`}
@@ -94,6 +97,7 @@ export function SiteHeader() {
                 { to: "/", label: "Inicio" },
                 { to: "/explorar", label: "Explorar profesionales" },
                 { to: "/comunas", label: "Comunas" },
+                { to: "/planes", label: "Planes para profesionales" },
                 { to: "/favoritos", label: "Favoritos" },
               ].map((l) => (
                 <Link

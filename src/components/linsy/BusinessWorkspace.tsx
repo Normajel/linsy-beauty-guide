@@ -10,6 +10,7 @@ import {
   type Revision,
 } from "@/lib/linsy-backend";
 import { BusinessEditor } from "./BusinessEditor";
+import { ProfessionalPlansPreview } from "./ProfessionalPlansPreview";
 import { WorkspacePage } from "./WorkspacePage";
 import { PageHeader } from "./States";
 
@@ -89,6 +90,9 @@ export function BusinessWorkspace({ preview = false }: { preview?: boolean }) {
                   Ver el perfil publicado
                 </Link>
               </p>
+            )}
+            {data?.role === "professional" && (
+              <ProfessionalPlansPreview />
             )}
             {canEdit && (
               <Button onClick={() => setEditing(true)}>

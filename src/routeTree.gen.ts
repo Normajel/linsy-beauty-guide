@@ -18,6 +18,7 @@ import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as GestionRouteImport } from './routes/gestion'
 import { Route as IngresarRouteImport } from './routes/ingresar'
 import { Route as MiNegocioRouteImport } from './routes/mi-negocio'
+import { Route as PlanesRouteImport } from './routes/planes'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as PublicarRouteImport } from './routes/publicar'
 import { Route as RecuperarContrasenaRouteImport } from './routes/recuperar-contrasena'
@@ -70,6 +71,11 @@ const MiNegocioRoute = MiNegocioRouteImport.update({
   path: '/mi-negocio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlanesRoute = PlanesRouteImport.update({
+  id: '/planes',
+  path: '/planes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacidadRoute = PrivacidadRouteImport.update({
   id: '/privacidad',
   path: '/privacidad',
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/gestion': typeof GestionRoute
   '/ingresar': typeof IngresarRoute
   '/mi-negocio': typeof MiNegocioRoute
+  '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
   '/publicar': typeof PublicarRoute
   '/recuperar-contrasena': typeof RecuperarContrasenaRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/gestion': typeof GestionRoute
   '/ingresar': typeof IngresarRoute
   '/mi-negocio': typeof MiNegocioRoute
+  '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
   '/publicar': typeof PublicarRoute
   '/recuperar-contrasena': typeof RecuperarContrasenaRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/gestion': typeof GestionRoute
   '/ingresar': typeof IngresarRoute
   '/mi-negocio': typeof MiNegocioRoute
+  '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
   '/publicar': typeof PublicarRoute
   '/recuperar-contrasena': typeof RecuperarContrasenaRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/gestion'
     | '/ingresar'
     | '/mi-negocio'
+    | '/planes'
     | '/privacidad'
     | '/publicar'
     | '/recuperar-contrasena'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/gestion'
     | '/ingresar'
     | '/mi-negocio'
+    | '/planes'
     | '/privacidad'
     | '/publicar'
     | '/recuperar-contrasena'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/gestion'
     | '/ingresar'
     | '/mi-negocio'
+    | '/planes'
     | '/privacidad'
     | '/publicar'
     | '/recuperar-contrasena'
@@ -217,6 +229,7 @@ export interface RootRouteChildren {
   GestionRoute: typeof GestionRoute
   IngresarRoute: typeof IngresarRoute
   MiNegocioRoute: typeof MiNegocioRoute
+  PlanesRoute: typeof PlanesRoute
   PrivacidadRoute: typeof PrivacidadRoute
   PublicarRoute: typeof PublicarRoute
   RecuperarContrasenaRoute: typeof RecuperarContrasenaRoute
@@ -290,6 +303,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MiNegocioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/planes': {
+      id: '/planes'
+      path: '/planes'
+      fullPath: '/planes'
+      preLoaderRoute: typeof PlanesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacidad': {
       id: '/privacidad'
       path: '/privacidad'
@@ -345,6 +365,7 @@ const rootRouteChildren: RootRouteChildren = {
   GestionRoute: GestionRoute,
   IngresarRoute: IngresarRoute,
   MiNegocioRoute: MiNegocioRoute,
+  PlanesRoute: PlanesRoute,
   PrivacidadRoute: PrivacidadRoute,
   PublicarRoute: PublicarRoute,
   RecuperarContrasenaRoute: RecuperarContrasenaRoute,
