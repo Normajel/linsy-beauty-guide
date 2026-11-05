@@ -1,3 +1,4 @@
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { findCategory, findCommune } from "@/lib/catalog";
@@ -25,21 +26,44 @@ export function PublishedBusiness({
       <p className="whitespace-pre-wrap">{profile.description}</p>
       {photos.isError && <p role="alert">No pudimos cargar las fotos.</p>}
       {!!photos.data?.length && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {photos.data.map((photo) => (
-            <img
-              key={photo.path}
-              src={photo.url}
-              alt={photo.name}
-              className="aspect-square w-full rounded-lg object-cover"
-            />
-          ))}
-        </div>
+        <section aria-label="Galería de trabajos" className="space-y-3">
+          <h3 className="text-2xl font-semibold">Galería de trabajos</h3>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {photos.data.map((photo, index) => (
+              <Dialog key={photo.path}>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label={`Ampliar foto ${index + 1}`}
+                    className="group overflow-hidden rounded-2xl bg-accent first:col-span-2"
+                  >
+                    <img
+                      src={photo.url}
+                      alt={photo.name}
+                      loading="lazy"
+                      className="aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:group-hover:scale-105"
+                    />
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl">
+                  <DialogTitle>
+                    Foto {index + 1} de {profile.name}
+                  </DialogTitle>
+                  <img
+                    src={photo.url}
+                    alt={photo.name}
+                    className="max-h-[72dvh] w-full rounded-xl object-contain"
+                  />
+                </DialogContent>
+              </Dialog>
+            ))}
+          </div>
+        </section>
       )}
       <h3 className="text-xl font-semibold">Servicios</h3>
       <ul className="space-y-2">
         {profile.services.map((service, index) => (
-          <li key={index} className="flex justify-between gap-4 border-b pb-2">
+          <li key={index} className="flex justify-between gap-4 rounded-xl border bg-card p-4">
             <span>{service.name}</span>
             <span>
               {service.price === null

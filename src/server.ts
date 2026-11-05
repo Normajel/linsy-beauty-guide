@@ -47,6 +47,11 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const path = new URL(request.url).pathname;
+      if (path.startsWith("/api/auth/") || path.startsWith("/api/linsy/")) {
+        const { linsyApi } = await import("./lib/linsy-api.server");
+        return await linsyApi(request);
+      }
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);

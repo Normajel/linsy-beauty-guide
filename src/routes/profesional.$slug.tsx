@@ -7,7 +7,7 @@ import { PublishedBusiness } from "@/components/linsy/PublishedBusiness";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { pageMeta } from "@/lib/page-meta";
-import { backend, revisionFields, useLinsySession, type Revision } from "@/lib/linsy-backend";
+import { backend, useLinsySession, type Revision } from "@/lib/linsy-backend";
 
 export const Route = createFileRoute("/profesional/$slug")({
   head: () =>
@@ -21,16 +21,7 @@ function ProfessionalProfile() {
   const query = useQuery({
     queryKey: ["public-profile", slug],
     enabled: !!backend && valid,
-    queryFn: async () => {
-      const result = await backend!
-        .from("business_revisions")
-        .select(revisionFields)
-        .eq("business_id", slug)
-        .eq("status", "approved")
-        .maybeSingle();
-      if (result.error) throw result.error;
-      return result.data as Revision | null;
-    },
+    queryFn: () => backend!.api<Revision | null>(`profile/${slug}`),
   });
 
   if (backend && valid && query.isPending)
@@ -91,16 +82,12 @@ function ReportForm({ businessId }: { businessId: string }) {
     }
     setBusy(true);
     try {
-      const { error } = await backend.from("reports").insert({ business_id: businessId, reason });
-      setMessage(
-        error?.code === "23505"
-          ? "Ya reportaste este perfil."
-          : error
-            ? "No pudimos enviar tu reporte."
-            : "Tu reporte fue enviado a administración.",
-      );
-    } catch {
-      setMessage("No pudimos enviar tu reporte.");
+      await backend.api("report", { business: businessId, reason });
+      setMessage("Tu reporte fue enviado a administración.");
+    } catch (error) {
+      setMessage(error instanceof Error && error.message === "already_reported_or_unavailable"
+        ? "Este perfil ya fue reportado por tu cuenta o dejó de estar disponible."
+        : "No pudimos enviar tu reporte. Comprueba que hayas confirmado tu correo.");
     } finally {
       setBusy(false);
     }

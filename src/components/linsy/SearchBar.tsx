@@ -13,10 +13,12 @@ import {
 import { COMMUNES } from "@/lib/catalog";
 
 export function SearchBar({
+  prominent = false,
   initialQ = "",
   initialComuna = "",
   initialCategory,
 }: {
+  prominent?: boolean;
   initialQ?: string | undefined;
   initialComuna?: string | undefined;
   initialCategory?: string | undefined;
@@ -41,7 +43,11 @@ export function SearchBar({
   return (
     <>
       <form onSubmit={submit} role="search" className="rounded-3xl bg-card p-3 shadow-lift sm:p-4">
-        <div className="grid gap-2 sm:grid-cols-[1.4fr_1fr_auto]">
+        <div
+          className={
+            prominent ? "grid gap-2 sm:grid-cols-2" : "grid gap-2 sm:grid-cols-[1.4fr_1fr_auto]"
+          }
+        >
           <label className="flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 focus-within:ring-2 focus-within:ring-ring">
             <Search className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
             <span className="sr-only">Servicio</span>
@@ -69,7 +75,11 @@ export function SearchBar({
               ))}
             </select>
           </label>
-          <Button type="submit" size="lg" className="h-auto min-h-12">
+          <Button
+            type="submit"
+            size="lg"
+            className={prominent ? "h-auto min-h-12 sm:col-span-2" : "h-auto min-h-12"}
+          >
             Buscar profesionales
           </Button>
         </div>

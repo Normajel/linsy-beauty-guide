@@ -8,13 +8,18 @@ export function CategoryCard({ category }: { category: Category }) {
     <Link
       to="/explorar"
       search={{ categoria: category.slug }}
-      className="group flex flex-col justify-between gap-6 rounded-3xl border border-border/70 bg-card p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lift"
+      className="group flex flex-col justify-between gap-6 rounded-[1.35rem] border bg-card p-4 shadow-soft motion-safe:transition motion-safe:hover:-translate-y-1 hover:border-primary/40 hover:shadow-lift sm:p-5"
     >
       <div className="flex items-start justify-between">
-        <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${TONE_CLASSES[category.tone]}`}>
+        <span
+          className={`flex h-12 w-12 items-center justify-center rounded-2xl ${TONE_CLASSES[category.tone]}`}
+        >
           <Icon className="h-5 w-5" aria-hidden />
         </span>
-        <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
+        <ArrowUpRight
+          className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          aria-hidden
+        />
       </div>
       <div>
         <h3 className="font-sans text-base font-semibold">{category.name}</h3>

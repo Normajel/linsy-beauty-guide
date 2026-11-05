@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff, Mail, ArrowRight, Heart, Store } from "lucide-react";
-import { useState, type FormEvent } from "react";
-import { backend, useLinsySession } from "@/lib/linsy-backend";
+import { useEffect, useState, type FormEvent } from "react";
+import { backend, linsyAuth, useLinsySession } from "@/lib/linsy-backend";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ConnectionNotice } from "./ConnectionNotice";
@@ -11,11 +11,61 @@ export function AccountPage({ mode }: { mode: "login" | "register" | "recover" }
   const [kind, setKind] = useState("cliente");
   const register = mode === "register";
   const recover = mode === "recover";
-  const { session, recovering } = useLinsySession();
+  const { session } = useLinsySession();
+  const [resetToken, setResetToken] = useState("");
+  useEffect(
+    () => setResetToken(new URLSearchParams(window.location.search).get("token") ?? ""),
+    [],
+  );
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
-  const reset = recover && recovering;
+  const reset = recover && !!resetToken;
+  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
+  const needsVerification =
+    !recover && (verificationEmail !== null || (session && !session.user.emailVerified));
+
+  async function verify(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (busy) return;
+    const form = new FormData(event.currentTarget);
+    const email = String(form.get("verification-email") ?? "").trim();
+    const otp = String(form.get("otp") ?? "").trim();
+    const resend = (event.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "resend";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setFailed(true);
+      setMessage("Ingresa el correo que usaste para registrarte.");
+      return;
+    }
+    setBusy(true);
+    setFailed(false);
+    setMessage("");
+    try {
+      const path = resend ? "send-verification-otp" : "verify-email";
+      const result = await fetch(`/api/auth/email-otp/${path}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(resend ? { email, type: "email-verification" } : { email, otp }),
+      });
+      if (!result.ok) {
+        setFailed(true);
+        setMessage(
+          resend
+            ? "No pudimos enviar otro código. Inténtalo en unos minutos."
+            : "El código no se pudo verificar. Revisa que sea el más reciente o solicita otro.",
+        );
+      } else if (resend) {
+        setMessage("Revisa tu correo e ingresa el código más reciente.");
+      } else {
+        window.location.assign("/ingresar");
+      }
+    } catch {
+      setFailed(true);
+      setMessage("No pudimos conectar con Linsy. Inténtalo nuevamente.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,30 +78,37 @@ export function AccountPage({ mode }: { mode: "login" | "register" | "recover" }
     setFailed(false);
     try {
       if (reset) {
-        const { error } = await backend.auth.updateUser({ password });
+        const { error } = await linsyAuth.resetPassword({
+          newPassword: password,
+          token: resetToken,
+        });
         if (error) throw error;
-        window.location.assign("/mi-negocio");
+        window.location.assign("/ingresar");
       } else if (recover) {
-        const { error } = await backend.auth.resetPasswordForEmail(email, {
+        const { error } = await linsyAuth.requestPasswordReset({
+          email,
           redirectTo: new URL("/recuperar-contrasena", window.location.origin).href,
         });
         if (error) throw error;
         setMessage("Si el correo está registrado, recibirás un enlace para recuperar el acceso.");
       } else if (register) {
-        const { data, error } = await backend.auth.signUp({
+        const callbackURL = new URL("/ingresar", window.location.origin).href;
+        const { data, error } = await linsyAuth.signUp.email({
           email,
           password,
-          options: {
-            data: { display_name: String(form.get("nombre") ?? ""), account_type: kind },
-            emailRedirectTo: new URL("/ingresar", window.location.origin).href,
-          },
+          name: String(form.get("nombre") ?? ""),
+          callbackURL,
         });
         if (error) throw error;
-        if (data.session)
+        if (data?.user.emailVerified)
           window.location.assign(kind === "profesional" ? "/mi-negocio" : "/explorar");
-        else setMessage("Revisa tu correo para confirmar la cuenta.");
+        else setVerificationEmail(email);
       } else {
-        const { error } = await backend.auth.signInWithPassword({ email, password });
+        const { error } = await linsyAuth.signIn.email({ email, password });
+        if (error?.code === "EMAIL_NOT_VERIFIED") {
+          setVerificationEmail(email);
+          return;
+        }
         if (error) throw error;
         window.location.assign("/mi-negocio");
       }
@@ -67,14 +124,33 @@ export function AccountPage({ mode }: { mode: "login" | "register" | "recover" }
     }
   }
 
+  async function signInWithGoogle() {
+    if (!backend || busy) return;
+    setBusy(true);
+    setMessage("");
+    setFailed(false);
+    try {
+      const callbackURL = new URL(
+        register && kind === "cliente" ? "/explorar" : "/mi-negocio",
+        window.location.origin,
+      ).href;
+      const { error } = await linsyAuth.signIn.social({ provider: "google", callbackURL });
+      if (error) throw error;
+    } catch {
+      setFailed(true);
+      setMessage("No pudimos continuar con Google. Inténtalo nuevamente.");
+      setBusy(false);
+    }
+  }
+
   const title = register
     ? "Crea tu cuenta"
     : recover
       ? "Recupera tu acceso"
       : "Qué bueno verte de nuevo";
   return (
-    <div className="container-linsy grid gap-12 py-12 lg:grid-cols-[1fr_1fr] lg:py-20">
-      <section className="max-w-lg">
+    <div className="container-linsy grid items-start gap-6 py-8 lg:grid-cols-2 lg:gap-12 lg:py-16">
+      <section className="editorial-account-intro rounded-[2rem] px-6 py-8 sm:px-9 sm:py-11">
         <p className="mb-3 text-sm font-semibold text-primary">Tu espacio en Linsy</p>
         <h1 className="text-4xl font-semibold sm:text-5xl">{title}</h1>
         <p className="mt-4 text-muted-foreground">
@@ -82,7 +158,7 @@ export function AccountPage({ mode }: { mode: "login" | "register" | "recover" }
             ? "Vuelve a encontrarte con tus favoritos y tu negocio."
             : "Belleza, cuidado y talento local. Todo en un mismo lugar."}
         </p>
-        <div className="mt-10 space-y-6">
+        <div className="mt-9 hidden space-y-6 lg:block">
           <div className="flex gap-4">
             <Heart className="h-6 w-6 shrink-0 text-primary" />
             <div>
@@ -103,9 +179,69 @@ export function AccountPage({ mode }: { mode: "login" | "register" | "recover" }
           </div>
         </div>
       </section>
-      <section className="w-full max-w-lg space-y-6 lg:justify-self-end" aria-label={title}>
+      <section
+        className="w-full space-y-6 rounded-[2rem] border bg-card p-5 shadow-soft sm:p-8"
+        aria-label={title}
+      >
         {!backend && <ConnectionNotice account />}
-        {session && !reset && !recover ? (
+        {backend && !recover && !register && !needsVerification && !session && (
+          <Button
+            variant="outline"
+            onClick={() => {
+              setVerificationEmail("");
+              setMessage("");
+            }}
+          >
+            Tengo un código de verificación
+          </Button>
+        )}
+        {needsVerification ? (
+          <form onSubmit={verify} className="space-y-4">
+            <h2 className="text-xl font-semibold">Verifica tu correo</h2>
+            <p>Ingresa el código de seis dígitos que te envió Linsy.</p>
+            <label className="block space-y-1">
+              <span>Correo electrónico</span>
+              <Input
+                type="email"
+                name="verification-email"
+                defaultValue={verificationEmail ?? session?.user.email ?? ""}
+                autoComplete="email"
+                required
+              />
+            </label>
+            <label className="block space-y-1">
+              <span>Código de verificación</span>
+              <Input
+                name="otp"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                required
+              />
+            </label>
+            <div className="flex flex-wrap gap-2">
+              <Button type="submit" disabled={busy}>
+                Verificar correo
+              </Button>
+              <Button type="submit" value="resend" formNoValidate variant="outline" disabled={busy}>
+                Reenviar código
+              </Button>
+              {!session && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    setVerificationEmail(null);
+                    setMessage("");
+                  }}
+                >
+                  Volver
+                </Button>
+              )}
+            </div>
+          </form>
+        ) : session && !reset && !recover ? (
           <div className="flex flex-wrap gap-3">
             <Button asChild>
               <Link to="/mi-negocio">Mi cuenta</Link>
@@ -116,7 +252,7 @@ export function AccountPage({ mode }: { mode: "login" | "register" | "recover" }
             <Button
               variant="outline"
               onClick={async () => {
-                const result = await backend?.auth.signOut();
+                const result = await linsyAuth.signOut();
                 if (result?.error) {
                   setFailed(true);
                   setMessage("No pudimos cerrar tu sesión.");
@@ -128,6 +264,28 @@ export function AccountPage({ mode }: { mode: "login" | "register" | "recover" }
           </div>
         ) : (
           <form className="space-y-5" onSubmit={submit}>
+            {!recover && !reset && (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  size="lg"
+                  disabled={!backend || busy || session === undefined}
+                  onClick={signInWithGoogle}
+                >
+                  <span aria-hidden className="font-bold text-base text-[#4285f4]">
+                    G
+                  </span>
+                  Continuar con Google
+                </Button>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span className="h-px flex-1 bg-border" />
+                  o con tu correo
+                  <span className="h-px flex-1 bg-border" />
+                </div>
+              </>
+            )}
             {register && (
               <fieldset>
                 <legend className="mb-3 text-sm font-semibold">Quiero participar como</legend>
@@ -254,23 +412,14 @@ export function AccountPage({ mode }: { mode: "login" | "register" | "recover" }
           </form>
         )}
         {message && <p role={failed ? "alert" : "status"}>{message}</p>}
-        <p className="text-center text-sm text-muted-foreground">
-          {register || recover ? (
-            <>
-              ¿Ya tienes cuenta?{" "}
-              <Link to="/ingresar" className="font-semibold text-primary">
-                Inicia sesión
-              </Link>
-            </>
-          ) : (
-            <>
-              ¿Primera vez aquí?{" "}
-              <Link to="/registrarse" className="font-semibold text-primary">
-                Crea tu cuenta
-              </Link>
-            </>
-          )}
-        </p>
+        {(register || recover) && (
+          <p className="text-center text-sm text-muted-foreground">
+            ¿Ya tienes cuenta?{" "}
+            <Link to="/ingresar" className="font-semibold text-primary">
+              Inicia sesión
+            </Link>
+          </p>
+        )}
       </section>
     </div>
   );

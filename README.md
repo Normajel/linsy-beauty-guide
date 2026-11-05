@@ -1137,34 +1137,30 @@ npm i
 npm run dev
 ```
 
-## Activar el flujo de publicación
+## Activar el flujo de publicación con Neon
 
-1. Activa un proyecto Supabase exclusivo para Linsy. En un proyecto existente,
-   revisa primero si alguna tabla de la migración de `supabase/migrations` ya existe.
-   Aplica la migración versionada al entorno de pruebas antes de usarla en producción.
-2. Copia `.env.example` a `.env.local` y agrega la URL de la API del proyecto y
-   su clave pública publishable. Configura las mismas variables en el entorno de
-   compilación del sitio. Usa únicamente la clave pública en el frontend.
-3. En Supabase Auth, configura la URL del sitio, las redirecciones permitidas
-   `/ingresar` y `/recuperar-contrasena` para los orígenes que correspondan, y
-   mantén habilitada la confirmación por correo.
-4. Crea y confirma la cuenta de administración. Un operador autorizado asigna el
-   rol desde SQL con el UUID de esa cuenta:
+- Vincula Neon con Auth habilitado al proyecto Linsy en Vercel. Configura
+  `DATABASE_URL`, `NEON_AUTH_BASE_URL`, `VITE_NEON_AUTH_URL` y un
+  `NEON_AUTH_COOKIE_SECRET` aleatorio de al menos 32 caracteres. Mantén la
+  cadena de conexión y el secreto solo en el servidor.
+- En Neon Auth, habilita la verificación por correo y agrega el origen de
+  Linsy a los dominios autorizados. Los enlaces regresan a `/ingresar`
+  y `/recuperar-contrasena`. Para habilitar el acceso con Google, configura
+  Google como proveedor social en Neon Auth y registra allí las credenciales
+  OAuth y los dominios/URL de retorno autorizados.
+- Vercel aplica la migración versionada al compilar. Para probar con otra
+  base, configura sus variables y ejecuta `node scripts/migrate-neon.mjs`
+  antes de iniciar el servidor.
+- Crea y verifica una cuenta administradora. Desde el editor SQL, asigna
+  el rol con su ID de usuario de Neon Auth:
 
-   ```sql
-   insert into public.user_roles (user_id, role)
-   values ('UUID_DE_LA_CUENTA', 'admin')
-   on conflict (user_id) do update set role = excluded.role;
-   ```
+  ```sql
+  insert into linsy.user_roles (user_id, role)
+  values ('ID_DE_LA_CUENTA', 'admin')
+  on conflict (user_id) do update set role = excluded.role;
+  ```
 
-5. En pruebas, registra una cuenta profesional nueva, guarda un borrador con una
-   foto, envíalo a revisión y comprueba que esté oculto en una ventana privada.
-   Solicita una corrección, reenvía el perfil y apruébalo. Comprueba que ahora
-   aparece en Explorar, que abre WhatsApp y que una edición pendiente mantiene
-   visible la versión publicada. Prueba un reporte con otra cuenta.
-
-El flujo admite un negocio por profesional. Las imágenes se guardan en un bucket
-privado y se muestran mediante enlaces temporales. Los cambios a perfiles
-aprobados pasan por revisión. El catálogo inicial está sembrado en la migración y
-usa los mismos slugs que la interfaz. La ubicación por distancia y las métricas
-se incorporarán en otra entrega.
+Cualquier cuenta con correo verificado puede preparar un negocio. Solo
+administración puede aprobarlo. Las fotos se almacenan en Neon con un
+máximo de 3 MiB por foto y seis fotos por revisión. El servidor autoriza
+cada descarga. Una edición pendiente conserva visible la revisión aprobada.

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   backend,
-  revisionFields,
+  type Workspace,
   signedPhotos,
   useLinsySession,
   type Revision,
@@ -20,48 +20,14 @@ export function BusinessWorkspace({ preview = false }: { preview?: boolean }) {
   useEffect(() => setEditing(false), [user]);
   const query = useQuery({
     queryKey: ["business-workspace", user],
-    enabled: !!backend && !!user,
+    enabled: !!backend && !!user && !!session?.user.emailVerified,
     queryFn: async () => {
-      const role = await backend!
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user!)
-        .maybeSingle();
-      if (role.error) throw role.error;
-      const business = await backend!
-        .from("businesses")
-        .select("id")
-        .eq("owner_id", user!)
-        .maybeSingle();
-      if (business.error) throw business.error;
-      if (!business.data)
-        return {
-          role: role.data?.role,
-          id: undefined,
-          approved: undefined,
-          working: undefined,
-          photos: [],
-        };
-      const revisions = await backend!
-        .from("business_revisions")
-        .select(revisionFields)
-        .eq("business_id", business.data.id)
-        .neq("status", "archived");
-      if (revisions.error) throw revisions.error;
-      const rows = revisions.data as Revision[];
-      const approved = rows.find((row) => row.status === "approved");
-      const working = rows.find((row) => row.status !== "approved");
-      return {
-        role: role.data?.role,
-        id: business.data.id as string,
-        approved,
-        working,
-        photos: await signedPhotos((working ?? approved)?.photos ?? []),
-      };
+      const data = await backend!.api<Workspace>("workspace");
+      return { ...data, photos: signedPhotos((data.working ?? data.approved)?.photos ?? []) };
     },
   });
   if (!backend) return preview ? <BusinessEditor /> : <WorkspacePage />;
-  if (session === undefined || (user && query.isPending))
+  if (session === undefined || (user && session.user.emailVerified && query.isPending))
     return (
       <p className="container-linsy py-10" role="status">
         Cargando tu cuenta…
@@ -80,8 +46,6 @@ export function BusinessWorkspace({ preview = false }: { preview?: boolean }) {
       <BusinessEditor
         key={user}
         connection={{
-          user,
-          businessId: data.id,
           working: data.working,
           initial: data.working ?? data.approved,
           photos: data.photos,
@@ -108,6 +72,9 @@ export function BusinessWorkspace({ preview = false }: { preview?: boolean }) {
           </div>
         ) : (
           <>
+            {!session.user.emailVerified && (
+              <p>Confirma tu correo para habilitar la publicación de negocios.</p>
+            )}
             {data?.working?.status === "pending" && <p>Tu perfil está en revisión.</p>}
             {data?.working?.status === "rejected" && (
               <p>Correcciones solicitadas. {data.working.review_reason}</p>
@@ -129,9 +96,14 @@ export function BusinessWorkspace({ preview = false }: { preview?: boolean }) {
               </Button>
             )}
             {data?.role === "admin" && (
-              <Button asChild variant="outline">
-                <Link to="/administracion">Revisar publicaciones</Link>
-              </Button>
+              <>
+                <Button asChild>
+                  <Link to="/gestion">Gestionar suscripciones y pagos</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/administracion">Revisar publicaciones</Link>
+                </Button>
+              </>
             )}
             <Button asChild variant="ghost">
               <Link to="/ingresar">Gestionar sesión</Link>

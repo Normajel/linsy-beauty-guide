@@ -1,0 +1,3 @@
+{
+  "buildCommand": "NITRO_PRESET=vercel bun run build && node scripts/migrate-neon.mjs"
+}

@@ -15,6 +15,7 @@ import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as ComunasRouteImport } from './routes/comunas'
 import { Route as ExplorarRouteImport } from './routes/explorar'
 import { Route as FavoritosRouteImport } from './routes/favoritos'
+import { Route as GestionRouteImport } from './routes/gestion'
 import { Route as IngresarRouteImport } from './routes/ingresar'
 import { Route as MiNegocioRouteImport } from './routes/mi-negocio'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
@@ -52,6 +53,11 @@ const ExplorarRoute = ExplorarRouteImport.update({
 const FavoritosRoute = FavoritosRouteImport.update({
   id: '/favoritos',
   path: '/favoritos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GestionRoute = GestionRouteImport.update({
+  id: '/gestion',
+  path: '/gestion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IngresarRoute = IngresarRouteImport.update({
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/comunas': typeof ComunasRoute
   '/explorar': typeof ExplorarRoute
   '/favoritos': typeof FavoritosRoute
+  '/gestion': typeof GestionRoute
   '/ingresar': typeof IngresarRoute
   '/mi-negocio': typeof MiNegocioRoute
   '/privacidad': typeof PrivacidadRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/comunas': typeof ComunasRoute
   '/explorar': typeof ExplorarRoute
   '/favoritos': typeof FavoritosRoute
+  '/gestion': typeof GestionRoute
   '/ingresar': typeof IngresarRoute
   '/mi-negocio': typeof MiNegocioRoute
   '/privacidad': typeof PrivacidadRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/comunas': typeof ComunasRoute
   '/explorar': typeof ExplorarRoute
   '/favoritos': typeof FavoritosRoute
+  '/gestion': typeof GestionRoute
   '/ingresar': typeof IngresarRoute
   '/mi-negocio': typeof MiNegocioRoute
   '/privacidad': typeof PrivacidadRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/comunas'
     | '/explorar'
     | '/favoritos'
+    | '/gestion'
     | '/ingresar'
     | '/mi-negocio'
     | '/privacidad'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/comunas'
     | '/explorar'
     | '/favoritos'
+    | '/gestion'
     | '/ingresar'
     | '/mi-negocio'
     | '/privacidad'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/comunas'
     | '/explorar'
     | '/favoritos'
+    | '/gestion'
     | '/ingresar'
     | '/mi-negocio'
     | '/privacidad'
@@ -202,6 +214,7 @@ export interface RootRouteChildren {
   ComunasRoute: typeof ComunasRoute
   ExplorarRoute: typeof ExplorarRoute
   FavoritosRoute: typeof FavoritosRoute
+  GestionRoute: typeof GestionRoute
   IngresarRoute: typeof IngresarRoute
   MiNegocioRoute: typeof MiNegocioRoute
   PrivacidadRoute: typeof PrivacidadRoute
@@ -254,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: '/favoritos'
       fullPath: '/favoritos'
       preLoaderRoute: typeof FavoritosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gestion': {
+      id: '/gestion'
+      path: '/gestion'
+      fullPath: '/gestion'
+      preLoaderRoute: typeof GestionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ingresar': {
@@ -322,6 +342,7 @@ const rootRouteChildren: RootRouteChildren = {
   ComunasRoute: ComunasRoute,
   ExplorarRoute: ExplorarRoute,
   FavoritosRoute: FavoritosRoute,
+  GestionRoute: GestionRoute,
   IngresarRoute: IngresarRoute,
   MiNegocioRoute: MiNegocioRoute,
   PrivacidadRoute: PrivacidadRoute,

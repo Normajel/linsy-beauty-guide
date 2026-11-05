@@ -1,17 +1,6 @@
-import { createClient, type Session } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
+import { createAuthClient } from "@neon/auth";
+import { BetterAuthReactAdapter } from "@neon/auth/react/adapters";
 
-const url = import.meta.env["VITE_SUPABASE_URL"];
-const key = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
-export const backend = url && key ? createClient(url, key) : null;
-let passwordRecovery = false;
-if (typeof window !== "undefined") {
-  backend?.auth.onAuthStateChange((event) => {
-    if (event === "PASSWORD_RECOVERY") passwordRecovery = true;
-    if (event === "SIGNED_OUT" || event === "USER_UPDATED") passwordRecovery = false;
-  });
-}
-export const photosBucket = "linsy-business-images";
 export const modalities = {
   local: "Local comercial",
   domicilio: "A domicilio",
@@ -33,31 +22,65 @@ export type Revision = {
   review_reason: string | null;
 };
 
-export const revisionFields =
-  "id,business_id,status,name,description,category,commune,modality,whatsapp,services,photos,review_reason";
+export type Workspace = {
+  role: "admin" | "professional";
+  id?: string;
+  approved?: Revision;
+  working?: Revision;
+};
+export type Directory = {
+  count: number;
+  rows: (Pick<
+    Revision,
+    "business_id" | "name" | "description" | "category" | "commune" | "modality"
+  > & { cover_photo?: string | null })[];
+};
+export type Moderation = {
+  queue: Revision[];
+  reports: { id: string; business_id: string; reason: string; created_at: string }[];
+};
 
-export function useLinsySession() {
-  const [session, setSession] = useState<Session | null | undefined>(backend ? undefined : null);
-  const [recovering, setRecovering] = useState(passwordRecovery);
-  useEffect(() => {
-    const subscription = backend?.auth.onAuthStateChange((event, value) => {
-      setSession(value);
-      setRecovering(event === "PASSWORD_RECOVERY" || passwordRecovery);
-    });
-    return () => subscription?.data.subscription.unsubscribe();
-  }, []);
-  return { session, recovering };
+async function api<T>(path: string, body?: unknown): Promise<T> {
+  const options: RequestInit =
+    body === undefined
+      ? {}
+      : body instanceof File
+        ? { method: "POST", body }
+        : {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          };
+  const result = await fetch(`/api/linsy/${path}`, options);
+  if (!result.ok) {
+    const data = await result.json().catch(() => null);
+    throw new Error(data?.code ?? "backend_error");
+  }
+  return result.json();
 }
 
-export async function signedPhotos(paths: string[]) {
-  if (!backend || !paths.length) return [];
-  const { data, error } = await backend.storage.from(photosBucket).createSignedUrls(paths, 300);
-  if (error) throw error;
-  return (data ?? []).flatMap((item) =>
-    item.signedUrl && item.path
-      ? [{ url: item.signedUrl, name: "Foto del negocio", path: item.path }]
-      : [],
-  );
+export const backend = import.meta.env["VITE_NEON_AUTH_URL"] ? { api } : null;
+
+const auth =
+  typeof window !== "undefined" && backend
+    ? createAuthClient(new URL("/api/auth", window.location.origin).href, {
+        adapter: BetterAuthReactAdapter(),
+      })
+    : createAuthClient("https://localhost.invalid/api/auth", { adapter: BetterAuthReactAdapter() });
+
+export const linsyAuth = auth;
+
+export function useLinsySession() {
+  const result = auth.useSession();
+  return { session: backend && result.isPending ? undefined : (result.data ?? null) };
+}
+
+export function signedPhotos(paths: string[]) {
+  return paths.map((path) => ({
+    url: `/api/linsy/photos/${encodeURIComponent(path)}`,
+    name: "Foto del negocio",
+    path,
+  }));
 }
 
 export function whatsappLink(profile: Revision, quote = false) {

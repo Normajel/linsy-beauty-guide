@@ -1,12 +1,13 @@
+import { BusinessCard } from "@/components/linsy/BusinessCard";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { backend, modalities } from "@/lib/linsy-backend";
+import { backend, type Directory } from "@/lib/linsy-backend";
 import { SearchX, X } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/linsy/SearchBar";
 import { EmptyState, PageHeader } from "@/components/linsy/States";
-import { CATEGORIES, findCategory, findCommune, normalizeText } from "@/lib/catalog";
+import { CATEGORIES, findCategory, findCommune } from "@/lib/catalog";
 
 const searchSchema = z.object({
   q: z.string().max(80).optional().catch(undefined),
@@ -47,25 +48,15 @@ function Explorar() {
   const directory = useQuery({
     queryKey: ["directory", s.q, cat?.slug, com?.slug, page],
     enabled: !!backend,
-    queryFn: async () => {
-      let query = backend!
-        .from("business_revisions")
-        .select("business_id,name,description,category,commune,modality", { count: "exact" })
-        .eq("status", "approved");
-      if (cat) query = query.eq("category", cat.slug);
-      if (com) query = query.eq("commune", com.slug);
-      const terms = normalizeText(s.q ?? "")
-        .replace(/[^a-z0-9]+/g, " ")
-        .trim()
-        .split(/ +/);
-      for (const term of terms.filter(Boolean)) query = query.ilike("search_text", `%${term}%`);
-      const { data, count, error } = await query
-        .order("name")
-        .order("business_id")
-        .range((page - 1) * pageSize, page * pageSize - 1);
-      if (error) throw error;
-      return { rows: data, count: count ?? 0 };
-    },
+    queryFn: () =>
+      backend!.api<Directory>(
+        `directory?${new URLSearchParams({
+          q: s.q ?? "",
+          category: cat?.slug ?? "",
+          commune: com?.slug ?? "",
+          page: String(page),
+        })}`,
+      ),
   });
   const chips: { label: string; key: keyof typeof s }[] = [];
   if (s.q) chips.push({ label: `“${s.q}”`, key: "q" });
@@ -127,24 +118,7 @@ function Explorar() {
         {!!directory.data?.rows.length && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {directory.data.rows.map((row) => (
-              <article
-                key={row.business_id}
-                className="min-w-0 space-y-3 rounded-xl border bg-card p-5"
-              >
-                <h2 className="break-words text-xl font-semibold">{row.name}</h2>
-                <p className="text-sm text-primary">
-                  {findCategory(row.category)?.name} · {findCommune(row.commune)?.name}
-                </p>
-                <p className="text-sm">{modalities[row.modality as keyof typeof modalities]}</p>
-                <p className="line-clamp-3 break-words text-sm text-muted-foreground">
-                  {row.description}
-                </p>
-                <Button asChild variant="outline">
-                  <Link to="/profesional/$slug" params={{ slug: row.business_id }}>
-                    Ver perfil
-                  </Link>
-                </Button>
-              </article>
+              <BusinessCard key={row.business_id} row={row} />
             ))}
           </div>
         )}

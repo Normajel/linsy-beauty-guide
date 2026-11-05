@@ -15,13 +15,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { CATEGORIES, COMMUNES } from "@/lib/catalog";
 import { ConnectionNotice } from "./ConnectionNotice";
 import { PageHeader } from "./States";
-import { backend, photosBucket, type Revision } from "@/lib/linsy-backend";
+import { backend, type Revision } from "@/lib/linsy-backend";
 
 type Service = { id: number; name: string; price: string };
 type Photo = { url: string; name: string; path?: string; file?: File };
 type Connection = {
-  user: string;
-  businessId: string | undefined;
   working: Revision | undefined;
   initial: Revision | undefined;
   photos: Photo[];
@@ -84,87 +82,29 @@ export function BusinessEditor({ connection }: { connection?: Connection }) {
     }
     setBusy(true);
     const uploaded: string[] = [];
-    let saved = false;
     try {
-      let id = connection.businessId;
-      if (!id) {
-        const created = await backend.from("businesses").insert({}).select("id").single();
-        if (created.error?.code === "23505") {
-          const existing = await backend
-            .from("businesses")
-            .select("id")
-            .eq("owner_id", connection.user)
-            .single();
-          if (existing.error) throw existing.error;
-          id = existing.data.id;
-        } else {
-          if (created.error) throw created.error;
-          id = created.data.id;
-        }
-      }
       const stored: Photo[] = [];
       for (const photo of photos) {
         if (!photo.file || photo.path) {
           stored.push(photo);
           continue;
         }
-        const path = `${connection.user}/${crypto.randomUUID()}`;
-        const result = await backend.storage.from(photosBucket).upload(path, photo.file);
-        if (result.error) throw result.error;
+        const path = await backend.api<string>("photos", photo.file);
         uploaded.push(path);
         stored.push({ url: photo.url, name: photo.name, path });
       }
-      const values = {
-        name: name.trim(),
-        description,
-        category,
-        commune,
-        modality: mode,
-        whatsapp: phone,
-        services: offerings,
-        photos: stored.map((photo) => photo.path),
+      await backend.api("draft", {
+        expected: connection.working?.id ?? null,
+        name: name.trim(), description, category, commune, modality: mode, whatsapp: phone,
+        services: offerings, photos: stored.map((photo) => photo.path),
         status: submit ? "pending" : "draft",
-        review_reason: null,
-        reviewed_at: null,
-        reviewed_by: null,
-      };
-      let revisionId = connection.working?.id;
-      if (!revisionId) {
-        const result = await backend
-          .from("business_revisions")
-          .insert({
-            ...values,
-            status: "draft",
-            business_id: id,
-          })
-          .select("id")
-          .single();
-        if (result.error) throw result.error;
-        revisionId = result.data.id;
-        saved = true;
-      }
-      if (connection.working || submit) {
-        const result = await backend
-          .from("business_revisions")
-          .update(values)
-          .eq("id", revisionId)
-          .in("status", ["draft", "rejected"])
-          .select("id")
-          .single();
-        if (result.error) throw result.error;
-        saved = true;
-      }
+      });
       setPhotos(stored);
       await connection.onSaved(submit);
       setMessage(submit ? "Tu negocio fue enviado a revisión." : "Borrador guardado.");
     } catch {
-      if (!saved && uploaded.length) await backend.storage.from(photosBucket).remove(uploaded);
-      if (saved) await connection.onSaved(false);
-      setError(
-        saved
-          ? "Se guardó el borrador, pero no se pudo enviar a revisión. Inténtalo nuevamente."
-          : "No pudimos guardar los cambios. Recarga la página si el estado cambió en otra ventana.",
-      );
+      if (uploaded.length) await backend.api("photos/discard", uploaded).catch(() => undefined);
+      setError("No pudimos guardar los cambios. Recarga la página si el estado cambió en otra ventana.");
     } finally {
       setBusy(false);
     }
@@ -387,9 +327,9 @@ export function BusinessEditor({ connection }: { connection?: Connection }) {
                     }
                     if (
                       photos.length + files.length > 6 ||
-                      files.some((file) => file.size > 5242880)
+                      files.some((file) => file.size > 3145728)
                     ) {
-                      setError("Puedes agregar hasta 6 fotos de 5 MB cada una.");
+                      setError("Puedes agregar hasta 6 fotos de 3 MB cada una.");
                       e.target.value = "";
                       return;
                     }

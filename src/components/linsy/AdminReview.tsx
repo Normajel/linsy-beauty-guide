@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { backend, revisionFields, useLinsySession, type Revision } from "@/lib/linsy-backend";
+import { backend, type Moderation, useLinsySession, type Revision } from "@/lib/linsy-backend";
 import { PublishedBusiness } from "./PublishedBusiness";
 import { PageHeader } from "./States";
 import { WorkspacePage } from "./WorkspacePage";
@@ -14,25 +14,7 @@ export function AdminReview() {
   const query = useQuery({
     queryKey: ["linsy-moderation", user],
     enabled: !!user && !!backend,
-    queryFn: async () => {
-      const access = await backend!.rpc("linsy_is_admin");
-      if (access.error) throw access.error;
-      if (!access.data) return null;
-      const [queue, reports] = await Promise.all([
-        backend!
-          .from("business_revisions")
-          .select(revisionFields)
-          .eq("status", "pending")
-          .order("name"),
-        backend!
-          .from("reports")
-          .select("id,business_id,reason,created_at")
-          .order("created_at", { ascending: false }),
-      ]);
-      if (queue.error) throw queue.error;
-      if (reports.error) throw reports.error;
-      return { queue: queue.data as Revision[], reports: reports.data };
-    },
+    queryFn: () => backend!.api<Moderation | null>("moderation"),
   });
 
   if (!backend) return <WorkspacePage admin />;
@@ -71,6 +53,9 @@ export function AdminReview() {
                 <p className="whitespace-pre-wrap break-words">{report.reason}</p>
               </article>
             ))}
+            <Button asChild variant="outline">
+              <Link to="/gestion">Volver</Link>
+            </Button>
           </>
         )}
       </div>
@@ -93,12 +78,7 @@ function ReviewCard({
     setError("");
     setBusy(true);
     try {
-      const result = await backend.rpc("linsy_review", {
-        revision_id: profile.id,
-        approve,
-        reason,
-      });
-      if (result.error) throw result.error;
+      await backend.api("review", { revision: profile.id, approve, reason });
       await onReviewed();
     } catch {
       setError(
