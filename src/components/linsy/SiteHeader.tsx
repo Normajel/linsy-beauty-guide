@@ -90,7 +90,6 @@ export function SiteHeader() {
                 { to: "/", label: "Inicio" },
                 { to: "/explorar", label: "Explorar profesionales" },
                 { to: "/comunas", label: "Comunas" },
-                { to: "/favoritos", label: "Favoritos" },
               ].map((l) => (
                 <Link
                   key={l.to}
