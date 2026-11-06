@@ -85,9 +85,11 @@ function ReportForm({ businessId }: { businessId: string }) {
       await backend.api("report", { business: businessId, reason });
       setMessage("Tu reporte fue enviado a administración.");
     } catch (error) {
-      setMessage(error instanceof Error && error.message === "already_reported_or_unavailable"
-        ? "Este perfil ya fue reportado por tu cuenta o dejó de estar disponible."
-        : "No pudimos enviar tu reporte. Comprueba que hayas confirmado tu correo.");
+      setMessage(
+        error instanceof Error && error.message === "already_reported_or_unavailable"
+          ? "Este perfil ya fue reportado por tu cuenta o dejó de estar disponible."
+          : "No pudimos enviar tu reporte. Comprueba que hayas confirmado tu correo.",
+      );
     } finally {
       setBusy(false);
     }

@@ -91,9 +91,7 @@ export function BusinessWorkspace({ preview = false }: { preview?: boolean }) {
                 </Link>
               </p>
             )}
-            {data?.role === "professional" && (
-              <ProfessionalPlansPreview />
-            )}
+            {data?.role === "professional" && <ProfessionalPlansPreview />}
             {canEdit && (
               <Button onClick={() => setEditing(true)}>
                 {data?.id ? "Editar mi negocio" : "Crear mi negocio"}

@@ -111,10 +111,7 @@ export function SiteHeader() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Categorías
                 </p>
-                <Link
-                  to="/planes"
-                  className="text-xs font-semibold text-primary hover:underline"
-                >
+                <Link to="/planes" className="text-xs font-semibold text-primary hover:underline">
                   Planes
                 </Link>
               </div>

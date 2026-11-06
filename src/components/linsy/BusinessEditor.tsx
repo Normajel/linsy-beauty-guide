@@ -95,8 +95,14 @@ export function BusinessEditor({ connection }: { connection?: Connection }) {
       }
       await backend.api("draft", {
         expected: connection.working?.id ?? null,
-        name: name.trim(), description, category, commune, modality: mode, whatsapp: phone,
-        services: offerings, photos: stored.map((photo) => photo.path),
+        name: name.trim(),
+        description,
+        category,
+        commune,
+        modality: mode,
+        whatsapp: phone,
+        services: offerings,
+        photos: stored.map((photo) => photo.path),
         status: submit ? "pending" : "draft",
       });
       setPhotos(stored);
@@ -104,7 +110,9 @@ export function BusinessEditor({ connection }: { connection?: Connection }) {
       setMessage(submit ? "Tu negocio fue enviado a revisión." : "Borrador guardado.");
     } catch {
       if (uploaded.length) await backend.api("photos/discard", uploaded).catch(() => undefined);
-      setError("No pudimos guardar los cambios. Recarga la página si el estado cambió en otra ventana.");
+      setError(
+        "No pudimos guardar los cambios. Recarga la página si el estado cambió en otra ventana.",
+      );
     } finally {
       setBusy(false);
     }

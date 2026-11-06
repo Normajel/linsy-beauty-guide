@@ -11,7 +11,16 @@ export function ComingSoon({ title, description }: { title: string; description:
         <EmptyState
           icon={Hourglass}
           title="Esta sección aún está en construcción"
-          action={<><Button asChild><Link to="/explorar">Explorar profesionales</Link></Button><Button asChild variant="outline"><Link to="/">Volver al inicio</Link></Button></>}
+          action={
+            <>
+              <Button asChild>
+                <Link to="/explorar">Explorar profesionales</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/">Volver al inicio</Link>
+              </Button>
+            </>
+          }
         >
           {description}
         </EmptyState>

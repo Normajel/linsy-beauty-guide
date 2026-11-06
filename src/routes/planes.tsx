@@ -167,10 +167,7 @@ function PlansPage() {
               <ul className="mt-3 flex-1 space-y-3">
                 {plan.benefits.map((benefit) => (
                   <li key={benefit} className="flex items-start gap-2.5 text-sm leading-relaxed">
-                    <Check
-                      className="mt-0.5 h-4 w-4 shrink-0 text-menta-ink"
-                      aria-hidden
-                    />
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-menta-ink" aria-hidden />
                     <span>{benefit}</span>
                   </li>
                 ))}
