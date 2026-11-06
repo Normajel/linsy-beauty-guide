@@ -58,13 +58,6 @@ export function SiteHeader() {
           <Link to="/comunas" className={navLink} activeProps={activeProps}>
             Comunas
           </Link>
-          <Link
-            to="/favoritos"
-            className={`${navLink} inline-flex items-center gap-1`}
-            activeProps={activeProps}
-          >
-            <Heart className="h-4 w-4" aria-hidden /> Favoritos
-          </Link>
         </nav>
         <div className="hidden items-center gap-2 lg:flex">
           <Button asChild variant="ghost" size="sm">
